@@ -358,6 +358,7 @@ impl PhysicalExpr for BinaryExpr {
 
     fn evaluate(&self, batch: &RecordBatch) -> Result<ColumnarValue> {
         use arrow::compute::kernels::numeric::*;
+        println!("BinaryExpr: evaluating operator {:?}", self.op);
 
         // Evaluate left-hand side expression.
         let lhs = self.left.evaluate(batch)?;
@@ -367,10 +368,18 @@ impl PhysicalExpr for BinaryExpr {
             ShortCircuitStrategy::None => {}
             ShortCircuitStrategy::ReturnLeft => return Ok(lhs),
             ShortCircuitStrategy::ReturnRight => {
+                println!(
+                    "BinaryExpr: short-circuit return right for operator {:?}",
+                    self.op
+                );
                 let rhs = self.right.evaluate(batch)?;
                 return Ok(rhs);
             }
             ShortCircuitStrategy::PreSelection(selection) => {
+                println!(
+                    "BinaryExpr: short-circuit pre-selection for operator {:?}",
+                    self.op
+                );
                 // The function `evaluate_selection` was not called for filtering and calculation,
                 // as it takes into account cases where the selection contains null values.
                 let batch = filter_record_batch(batch, selection)?;
@@ -831,7 +840,7 @@ enum ShortCircuitStrategy<'a> {
 /// Based on the results calculated from the left side of the short-circuit operation,
 /// if the proportion of `true` is less than 0.2 and the current operation is an `and`,
 /// the `RecordBatch` will be filtered in advance.
-const PRE_SELECTION_THRESHOLD: f32 = 0.2;
+const PRE_SELECTION_THRESHOLD: f32 = -1;
 
 /// Checks if a logical operator (`AND`/`OR`) can short-circuit evaluation based on the left-hand side (lhs) result.
 ///
