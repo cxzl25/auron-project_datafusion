@@ -849,7 +849,7 @@ enum ShortCircuitStrategy<'a> {
 /// Based on the results calculated from the left side of the short-circuit operation,
 /// if the proportion of `true` is less than 0.2 and the current operation is an `and`,
 /// the `RecordBatch` will be filtered in advance.
-const PRE_SELECTION_THRESHOLD: f32 = -1.0;
+const PRE_SELECTION_THRESHOLD: f32 = 1.0;
 
 /// Checks if a logical operator (`AND`/`OR`) can short-circuit evaluation based on the left-hand side (lhs) result.
 ///
