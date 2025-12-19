@@ -361,12 +361,19 @@ impl PhysicalExpr for BinaryExpr {
         eprintln!("BinaryExpr: evaluating operator {:?}", self.op);
 
         // Evaluate left-hand side expression.
+        eprintln!("BinaryExpr: evaluating left expression {},{}", self.left, batch.num_rows());
         let lhs = self.left.evaluate(batch)?;
+        eprintln!("BinaryExpr: left expression evaluated {},{},{}",lhs, lhs.data_type(), batch.num_rows());
 
         // Check if we can apply short-circuit evaluation.
         match check_short_circuit(&lhs, &self.op) {
-            ShortCircuitStrategy::None => {}
-            ShortCircuitStrategy::ReturnLeft => return Ok(lhs),
+            ShortCircuitStrategy::None => {
+                eprintln!("BinaryExpr: no short-circuit for operator {:?}", self.op);
+            }
+            ShortCircuitStrategy::ReturnLeft => {
+                eprintln!("BinaryExpr: short-circuit return left for operator {:?}", self.op);
+                return Ok(lhs)
+            },
             ShortCircuitStrategy::ReturnRight => {
                 eprintln!(
                     "BinaryExpr: short-circuit return right for operator {:?}",
@@ -388,7 +395,9 @@ impl PhysicalExpr for BinaryExpr {
             }
         }
 
+        eprintln!("BinaryExpr: evaluating right expression {},{}", self.right, batch.num_rows());
         let rhs = self.right.evaluate(batch)?;
+        eprintln!("BinaryExpr: right expression evaluated {},{},{}",rhs, rhs.data_type(), batch.num_rows());
         let left_data_type = lhs.data_type();
         let right_data_type = rhs.data_type();
 
