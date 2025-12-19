@@ -493,7 +493,7 @@ impl PhysicalExpr for CaseExpr {
     }
 
     fn evaluate(&self, batch: &RecordBatch) -> Result<ColumnarValue> {
-        println!("Evaluating CaseExpr with method {:?}", self.eval_method);
+        eprintln!("Evaluating CaseExpr with method {:?}", self.eval_method);
         match self.eval_method {
             EvalMethod::WithExpression => {
                 // this use case evaluates "expr" and then compares the values with the "when"

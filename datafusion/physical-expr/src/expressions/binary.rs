@@ -358,7 +358,7 @@ impl PhysicalExpr for BinaryExpr {
 
     fn evaluate(&self, batch: &RecordBatch) -> Result<ColumnarValue> {
         use arrow::compute::kernels::numeric::*;
-        println!("BinaryExpr: evaluating operator {:?}", self.op);
+        eprintln!("BinaryExpr: evaluating operator {:?}", self.op);
 
         // Evaluate left-hand side expression.
         let lhs = self.left.evaluate(batch)?;
@@ -368,7 +368,7 @@ impl PhysicalExpr for BinaryExpr {
             ShortCircuitStrategy::None => {}
             ShortCircuitStrategy::ReturnLeft => return Ok(lhs),
             ShortCircuitStrategy::ReturnRight => {
-                println!(
+                eprintln!(
                     "BinaryExpr: short-circuit return right for operator {:?}",
                     self.op
                 );
@@ -376,7 +376,7 @@ impl PhysicalExpr for BinaryExpr {
                 return Ok(rhs);
             }
             ShortCircuitStrategy::PreSelection(selection) => {
-                println!(
+                eprintln!(
                     "BinaryExpr: short-circuit pre-selection for operator {:?}",
                     self.op
                 );
